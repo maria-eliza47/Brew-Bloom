@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brew & Bloom - Sistem Gestiune Baza de Date</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #fdf8f9;
+            color: #333333;
+            line-height: 1.5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #ebd0d7;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(184, 93, 117, 0.08);
+        }
+
+        /* HEADER */
+        header {
+            background-color: #9c415d;
+            color: #ffffff;
+            padding: 16px 24px;
+            border-bottom: 3px solid #7c2d44;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px 5px 0 0;
+        }
+
+        header h1 {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 0.3px;
+        }
+
+        header .student-info {
+            font-size: 13px;
+            color: #fde8ee;
+        }
+
+        /* NAV TABS */
+        .nav-tabs {
+            display: flex;
+            background-color: #f8e8ec;
+            border-bottom: 1px solid #ebd0d7;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 18px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #6d3947;
+            cursor: pointer;
+            border-right: 1px solid #ebd0d7;
+            outline: none;
+            transition: background-color 0.2s, color 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background-color: #f1d3dc;
+            color: #4a1d29;
+        }
+
+        .tab-btn.active {
+            background-color: #ffffff;
+            color: #9c415d;
+            border-bottom: 3px solid #9c415d;
+        }
+
+        /* CONTENT SECTIONS */
+        .content {
+            padding: 24px;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        h2 {
+            font-size: 16px;
+            color: #832f48;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #f3d4dc;
+            padding-bottom: 6px;
+        }
+
+        p.desc {
+            font-size: 13px;
+            color: #555555;
+            margin-bottom: 16px;
+        }
+
+        /* CONTROLS BOX */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            background-color: #fdf2f4;
+            padding: 12px 16px;
+            border: 1px solid #f3d5dd;
+            border-radius: 4px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #632235;
+        }
+
+        select, input[type="text"], input[type="number"], input[type="date"] {
+            padding: 6px 10px;
+            font-size: 13px;
+            border: 1px solid #d9b6c0;
+            border-radius: 3px;
+            background-color: #ffffff;
+            color: #333333;
+        }
+
+        select:focus, input:focus {
+            border-color: #9c415d;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(156, 65, 93, 0.15);
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            border: 1px solid #d9b6c0;
+            border-radius: 3px;
+            cursor: pointer;
+            background-color: #fce7ec;
+            color: #632235;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #f5cfd9;
+        }
+
+        .btn-primary {
+            background-color: #9c415d;
+            color: #ffffff;
+            border-color: #7c2d44;
+        }
+
+        .btn-primary:hover {
+            background-color: #7c2d44;
+        }
+
+        .btn-sort {
+            background-color: #c06c84;
+            color: #ffffff;
+            border-color: #a84e67;
+        }
+
+        .btn-sort:hover {
+            background-color: #a84e67;
+        }
+
+        .btn-danger {
+            background-color: #c0392b;
+            color: #ffffff;
+            border-color: #962d22;
+        }
+
+        .btn-danger:hover {
+            background-color: #962d22;
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        /* SQL CODE BOX */
+        .sql-code {
+            background-color: #faf0f3;
+            border: 1px solid #ebd0d7;
+            border-left: 4px solid #9c415d;
+            padding: 12px;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 12px;
+            color: #212529;
+            margin-bottom: 16px;
+            white-space: pre-wrap;
+        }
+
+        /* TABLES */
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 10px;
+            border: 1px solid #ebd0d7;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        th, td {
+            border: 1px solid #ebd0d7;
+            padding: 8px 12px;
+        }
+
+        th {
+            background-color: #f8e5eb;
+            color: #5c1e30;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background-color: #f1d1dc;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fdf7f9;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background-color: #ffffff;
+            border: 1px solid #d9b6c0;
+            border-radius: 4px;
+            width: 450px;
+            max-width: 90%;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(156, 65, 93, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f3d4dc;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            font-size: 15px;
+            color: #832f48;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #888888;
+        }
+
+        .form-row {
+            margin-bottom: 12px;
+        }
+
+        .form-row label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 12px;
+        }
+
+        .form-row input, .form-row select {
+            width: 100%;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 16px;
+            border-top: 1px solid #f3d4dc;
+            padding-top: 12px;
+        }
+
+        .info-box {
+            background-color: #fdf0f4;
+            border: 1px solid #f5c8d4;
+            color: #721c32;
+            padding: 10px 14px;
+            border-radius: 3px;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <header>
+        <h1>Sistem Gestiune Baza de Date - Cafeneaua Brew & Bloom</h1>
+        <div class="student-info">
+            Student: Pîrvulescu Eliza-Maria | Grupa: 264 | Oracle SQL + Node.js
+        </div>
+    </header>
+
+    <!-- NAVIGATION TABS -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="deschideTab('tab-a', this)">a) Listare si sortare tabele</button>
+        <button class="tab-btn" onclick="deschideTab('tab-b', this)">b) Modificare date (CRUD)</button>
+        <button class="tab-btn" onclick="deschideTab('tab-c', this)">c) Cerere 3 tabele</button>
+        <button class="tab-btn" onclick="deschideTab('tab-d', this)">d) Cerere functii grup si HAVING</button>
+        <button class="tab-btn" onclick="deschideTab('tab-e', this)">e) Constrangere ON DELETE CASCADE</button>
+        <button class="tab-btn" onclick="deschideTab('tab-f', this)">f) Vizualizari (View-uri)</button>
+    </div>
+
+    <div class="content">
+
+
+        <div id="tab-a" class="tab-panel active">
+            <h2>a) Listare continut cu posibilitatea de sortare</h2>
+            <p class="desc">Selectati un tabel din baza de date a cafenelei Brew & Bloom. Puteti alege coloana si apasa pe butoanele ASC / DESC sau puteti da clic direct pe antetul oricarei coloane.</p>
+
+            <div class="controls">
+                <label for="select-tabel-a">Tabel:</label>
+                <select id="select-tabel-a" onchange="schimbaTabelA()">
+                    <option value="CLIENT">CLIENT</option>
+                    <option value="COMANDA">COMANDA</option>
+                    <option value="PRODUS">PRODUS</option>
+                    <option value="CATEGORIE">CATEGORIE</option>
+                    <option value="MAGAZIN">MAGAZIN</option>
+                    <option value="LOCATIE">LOCATIE</option>
+                    <option value="ANGAJAT">ANGAJAT</option>
+                    <option value="METODA_PLATA">METODA_PLATA</option>
+                    <option value="DETALII_COMANDA">DETALII_COMANDA</option>
+                    <option value="STOC">STOC</option>
+                </select>
+
+                <label for="select-coloana-sort" style="margin-left: 8px;">Coloana:</label>
+                <select id="select-coloana-sort"></select>
+
+                <button class="btn btn-sort" onclick="aplicaSortare('ASC')">Sorteaza Crescator (ASC)</button>
+                <button class="btn btn-sort" onclick="aplicaSortare('DESC')">Sorteaza Descrescator (DESC)</button>
+                <button class="btn btn-primary" onclick="reseteazaSortare()">Reincarca (Fara sortare)</button>
+            </div>
+
+            <div id="status-sortare-a" class="info-box" style="display:none;"></div>
+
+            <div class="table-wrap">
+                <table id="tabel-a">
+                    <thead id="thead-a"></thead>
+                    <tbody id="tbody-a"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-b" class="tab-panel">
+            <h2>b) Modificare informatii (Optiune de editare / stergere / adaugare)</h2>
+            <p class="desc">Permite modificarea inregistrarilor (UPDATE), stergerea (DELETE) sau adaugarea de inregistrari noi (INSERT) in baza de date a cafenelei Brew & Bloom.</p>
+
+            <div class="controls">
+                <label for="select-tabel-b">Selectare tabel:</label>
+                <select id="select-tabel-b" onchange="incarcaTabelB()">
+                    <option value="CLIENT">CLIENT</option>
+                    <option value="PRODUS">PRODUS</option>
+                    <option value="CATEGORIE">CATEGORIE</option>
+                    <option value="MAGAZIN">MAGAZIN</option>
+                    <option value="ANGAJAT">ANGAJAT</option>
+                    <option value="METODA_PLATA">METODA_PLATA</option>
+                    <option value="COMANDA">COMANDA</option>
+                </select>
+                <button class="btn btn-primary" onclick="deschideModalAdaugare()">Adauga inregistrare noua</button>
+                <button class="btn btn-sort" onclick="incarcaTabelB()">Reincarca date tabel</button>
+            </div>
+
+            <div id="status-crud" class="info-box" style="display:none;"></div>
+
+            <div class="table-wrap">
+                <table id="tabel-b">
+                    <thead id="thead-b"></thead>
+                    <tbody id="tbody-b"></tbody>
+                </table>
+            </div>
+        </div>
+
+    
+        <div id="tab-c" class="tab-panel">
+            <h2>c) Afisarea rezultatului unei cereri care extrage informatii din cel putin 3 tabele si le filtreaza cu 2 conditii</h2>
+            <p class="desc">Cererea uneste tabelele COMANDA, CLIENT si METODA_PLATA din schema cafenelei Brew & Bloom, extragand comenzile conform filtrelor de mai jos.</p>
+
+            <div class="sql-code">SELECT com.ID_Comanda, 
+       cli.Nume || ' ' || cli.Prenume AS Nume_Client, 
+       cli.Email, cli.Telefon,
+       mp.Tip_plata AS Metoda_Plata, 
+       com.Total, 
+       TO_CHAR(com.Data_Plasarii, 'YYYY-MM-DD') AS Data_Plasarii
+FROM Comanda com
+JOIN Client cli ON com.CNP = cli.CNP
+JOIN Metoda_Plata mp ON com.ID_Metoda = mp.ID_Metoda
+WHERE com.Total >= :minTotal 
+  AND mp.Status = :status
+ORDER BY com.Total DESC;</div>
+
+            <div class="controls">
+                <label for="input-min-total">Total minim (Lei):</label>
+                <input type="number" id="input-min-total" value="25.00" step="5" style="width:80px;">
+
+                <label for="select-status-plata" style="margin-left: 8px;">Status metoda plata:</label>
+                <select id="select-status-plata">
+                    <option value="Activ">Activ</option>
+                    <option value="Inactiv">Inactiv</option>
+                    <option value="Toate">Toate</option>
+                </select>
+
+                <button class="btn btn-primary" onclick="executaCerereC()">Executa cererea SQL</button>
+                <button class="btn btn-sort" onclick="filtreazaRapidC(30, 'Activ')">Comenzi >= 30 Lei</button>
+                <button class="btn btn-sort" onclick="filtreazaRapidC(15, 'Activ')">Comenzi >= 15 Lei</button>
+                <button class="btn" onclick="reseteazaFiltreC()">Reseteaza filtre</button>
+            </div>
+
+            <div id="status-c" class="info-box" style="display:none;"></div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Comanda</th>
+                            <th>Nume Client</th>
+                            <th>Email</th>
+                            <th>Telefon</th>
+                            <th>Metoda Plata</th>
+                            <th>Total (Lei)</th>
+                            <th>Data Plasarii</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-c">
+                        <tr><td colspan="7" style="text-align:center; color:#777;">Apasati butonul 'Executa cererea SQL' pentru a rula interogarea.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div id="tab-d" class="tab-panel">
+            <h2>d) Afisarea rezultatului unei cereri care foloseste functii grup si clauza HAVING</h2>
+            <p class="desc">Cererea calculeaza indicatori salariali pe fiecare cafenea Brew & Bloom si filtreaza locatiile conform conditiilor din clauza HAVING.</p>
+
+            <div class="sql-code">SELECT m.Nume_Magazin, 
+       COUNT(a.ID_Angajat) AS Numar_Angajati, 
+       ROUND(AVG(a.Salariu), 2) AS Salariu_Mediu, 
+       MIN(a.Salariu) AS Salariu_Minim,
+       MAX(a.Salariu) AS Salariu_Maxim,
+       SUM(a.Salariu) AS Total_Fond_Salarii
+FROM Magazin m
+JOIN Angajat a ON m.ID_Magazin = a.ID_Magazin
+GROUP BY m.Nume_Magazin
+HAVING COUNT(a.ID_Angajat) >= :minEmployees 
+   AND AVG(a.Salariu) >= :minAvgSalary
+ORDER BY Salariu_Mediu DESC;</div>
+
+            <div class="controls">
+                <label for="input-min-angajati">Nr. minim angajati:</label>
+                <input type="number" id="input-min-angajati" value="2" min="1" style="width:60px;">
+
+                <label for="input-min-salariu" style="margin-left: 8px;">Salariu mediu minim (Lei):</label>
+                <input type="number" id="input-min-salariu" value="3500" step="50" style="width:90px;">
+
+                <button class="btn btn-primary" onclick="executaCerereD()">Executa cererea SQL</button>
+                <button class="btn btn-sort" onclick="filtreazaRapidD(2, 3600)">Medie >= 3600 Lei</button>
+                <button class="btn btn-sort" onclick="filtreazaRapidD(1, 3000)">Toate magazinele</button>
+                <button class="btn" onclick="reseteazaFiltreD()">Reseteaza filtre</button>
+            </div>
+
+            <div id="status-d" class="info-box" style="display:none;"></div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nume Magazin</th>
+                            <th>Numar Angajati</th>
+                            <th>Salariu Mediu (Lei)</th>
+                            <th>Salariu Minim (Lei)</th>
+                            <th>Salariu Maxim (Lei)</th>
+                            <th>Total Fond Salarii (Lei)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-d">
+                        <tr><td colspan="6" style="text-align:center; color:#777;">Apasati butonul 'Executa cererea SQL' pentru a rula interogarea.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div id="tab-e" class="tab-panel">
+            <h2>e) Implementarea unei constrangeri de tipul ON DELETE CASCADE si exemplificare din interfata</h2>
+            <p class="desc">Demonstreaza comportamentul constrangerii: stergerea unui client din tabela CLIENT duce automat la eliminarea comenzilor asociate din COMANDA si a liniilor din DETALII_COMANDA.</p>
+
+            <div class="sql-code">ALTER TABLE Comanda 
+ADD CONSTRAINT FK_Comanda_Client FOREIGN KEY (CNP) 
+REFERENCES Client(CNP) ON DELETE CASCADE;</div>
+
+            <div class="controls">
+                <label for="select-client-cascade">Selectare client:</label>
+                <select id="select-client-cascade" onchange="incarcaClientCascade()"></select>
+                <button class="btn btn-sort" onclick="incarcaClientCascade()">Afiseaza detalii client</button>
+                <button class="btn btn-danger" onclick="executaStergereCascade()">Sterge Clientul (Cascade)</button>
+            </div>
+
+            <div id="cascade-detalii" style="margin-top: 15px;"></div>
+        </div>
+
+
+        <div id="tab-f" class="tab-panel">
+            <h2>f) Utilizarea vizualizarilor (compusa care permite operatii LMD, respectiv complexa)</h2>
+            
+            <!-- 1. VIZUALIZARE COMPUSA -->
+            <h3 style="font-size:14px; color:#832f48; margin:16px 0 6px;">1. Vizualizare compusa (permite operatii LMD pe tabela Produs)</h3>
+            <p class="desc">Creata prin JOIN intre PRODUS si CATEGORIE. Permite modificarea pretului direct prin vizualizare:</p>
+
+            <div class="sql-code">CREATE OR REPLACE VIEW V_PRODUS_CATEGORIE AS
+SELECT p.ID_Produs, p.Nume_Produs, p.Pret, p.ID_Categorie
+FROM Produs p
+JOIN Categorie c ON p.ID_Categorie = c.ID_Categorie;</div>
+
+            <div class="controls">
+                <button class="btn btn-primary" onclick="incarcaViewCompusa()">Incarca date vizualizare compusa</button>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Produs</th>
+                            <th>Nume Produs</th>
+                            <th>Pret Curent (Lei)</th>
+                            <th>ID Categorie</th>
+                            <th>Modificare Pret (LMD)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-view-compusa">
+                        <tr><td colspan="5" style="text-align:center; color:#777;">Apasati butonul pentru a incarca datele.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 2. VIZUALIZARE COMPLEXA -->
+            <h3 style="font-size:14px; color:#832f48; margin:24px 0 6px;">2. Vizualizare complexa (cu functii grup si GROUP BY)</h3>
+            <p class="desc">Centralizeaza date din 3 tabele (MAGAZIN, LOCATIE, ANGAJAT) si calculeaza indicatori statistici pentru cafenelele Brew & Bloom:</p>
+
+            <div class="sql-code">CREATE OR REPLACE VIEW V_STATISTICI_MAGAZINE AS
+SELECT m.ID_Magazin, m.Nume_Magazin, l.Oras,
+       COUNT(a.ID_Angajat) AS Numar_Angajati,
+       NVL(ROUND(AVG(a.Salariu), 2), 0) AS Salariu_Mediu,
+       NVL(SUM(a.Salariu), 0) AS Fond_Total_Salarii
+FROM Magazin m
+JOIN Locatie l ON m.ID_Locatie = l.ID_Locatie
+LEFT JOIN Angajat a ON m.ID_Magazin = a.ID_Magazin
+GROUP BY m.ID_Magazin, m.Nume_Magazin, l.Oras;</div>
+
+            <div class="controls">
+                <button class="btn btn-primary" onclick="incarcaViewComplexa('id')">Incarca raport implicit (dupa ID)</button>
+                <button class="btn btn-sort" onclick="incarcaViewComplexa('salariu')">Sorteaza dupa Salariu Mediu (DESC)</button>
+                <button class="btn btn-sort" onclick="incarcaViewComplexa('angajati')">Sorteaza dupa Numar Angajati (DESC)</button>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Magazin</th>
+                            <th>Nume Magazin</th>
+                            <th>Oras</th>
+                            <th>Numar Angajati</th>
+                            <th>Salariu Mediu (Lei)</th>
+                            <th>Total Salarii (Lei)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-view-complexa">
+                        <tr><td colspan="6" style="text-align:center; color:#777;">Apasati butonul pentru a incarca datele.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL FORMULAR EDITARE / ADAUGARE -->
+<div id="modal-crud" class="modal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 id="modal-title">Editare date</h3>
+            <button class="modal-close" onclick="inchideModal()">&times;</button>
+        </div>
+        <div id="modal-fields"></div>
+        <div class="modal-footer">
+            <button class="btn" onclick="inchideModal()">Anuleaza</button>
+            <button class="btn btn-primary" onclick="salveazaModal()">Salveaza in Oracle</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = 'http://localhost:3000/api';
+    let sortCol = null;
+    let sortOrder = 'ASC';
+    let modalMode = 'edit';
+    let currentTable = '';
+    let currentPK = {};
+
+    function deschideTab(tabId, el) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        if (el) el.classList.add('active');
+
+        if (tabId === 'tab-a') incarcaTabelA();
+        if (tabId === 'tab-b') incarcaTabelB();
+        if (tabId === 'tab-c') executaCerereC();
+        if (tabId === 'tab-d') executaCerereD();
+        if (tabId === 'tab-e') populeazaSelectCascade();
+        if (tabId === 'tab-f') { incarcaViewCompusa(); incarcaViewComplexa('id'); }
+    }
+
+
+    function schimbaTabelA() {
+        sortCol = null;
+        sortOrder = 'ASC';
+        incarcaTabelA();
+    }
+
+    function incarcaTabelA() {
+        const table = document.getElementById('select-tabel-a').value;
+        let url = `${API}/tables/${table}`;
+        if (sortCol) url += `?sort=${sortCol}&order=${sortOrder}`;
+
+        fetch(url)
+            .then(r => r.json())
+            .then(res => {
+                const thead = document.getElementById('thead-a');
+                const tbody = document.getElementById('tbody-a');
+                const selectCol = document.getElementById('select-coloana-sort');
+                const statusBox = document.getElementById('status-sortare-a');
+
+                if (!res.data || res.data.length === 0) {
+                    thead.innerHTML = '';
+                    tbody.innerHTML = `<tr><td>Tabelul este gol.</td></tr>`;
+                    statusBox.style.display = 'none';
+                    return;
+                }
+
+                const cols = Object.keys(res.data[0]);
+
+                const currentVal = selectCol.value;
+                selectCol.innerHTML = cols.map(c => `<option value="${c}">${c}</option>`).join('');
+                if (sortCol && cols.includes(sortCol)) {
+                    selectCol.value = sortCol;
+                } else if (cols.includes(currentVal)) {
+                    selectCol.value = currentVal;
+                }
+
+                if (sortCol) {
+                    statusBox.style.display = 'block';
+                    statusBox.innerHTML = `<strong>Filtru activ:</strong> Tabelul <code>${table}</code> este sortat dupa coloana <code>${sortCol}</code> (${sortOrder === 'ASC' ? 'Crescator / ASC' : 'Descrescator / DESC'}).`;
+                } else {
+                    statusBox.style.display = 'none';
+                }
+
+                thead.innerHTML = '<tr>' + cols.map(c => `
+                    <th onclick="sorteazaA('${c}')">
+                        ${c} ${sortCol === c ? (sortOrder === 'ASC' ? '▲ (asc)' : '▼ (desc)') : ''}
+                    </th>
+                `).join('') + '</tr>';
+
+                tbody.innerHTML = res.data.map(r => `
+                    <tr>${cols.map(c => `<td>${r[c] !== null ? r[c] : ''}</td>`).join('')}</tr>
+                `).join('');
+            })
+            .catch(err => console.error("Eroare la incarcarea tabelei A:", err));
+    }
+
+    function aplicaSortare(order) {
+        const col = document.getElementById('select-coloana-sort').value;
+        if (!col) return;
+        sortCol = col;
+        sortOrder = order;
+        incarcaTabelA();
+    }
+
+    function reseteazaSortare() {
+        sortCol = null;
+        sortOrder = 'ASC';
+        incarcaTabelA();
+    }
+
+    function sorteazaA(col) {
+        if (sortCol === col) {
+            sortOrder = (sortOrder === 'ASC') ? 'DESC' : 'ASC';
+        } else {
+            sortCol = col;
+            sortOrder = 'ASC';
+        }
+        incarcaTabelA();
+    }
+
+
+    const PK_MAP = {
+        'CLIENT': ['CNP'],
+        'PRODUS': ['ID_PRODUS'],
+        'CATEGORIE': ['ID_CATEGORIE'],
+        'MAGAZIN': ['ID_MAGAZIN'],
+        'ANGAJAT': ['ID_ANGAJAT'],
+        'METODA_PLATA': ['ID_METODA'],
+        'COMANDA': ['ID_COMANDA']
+    };
+
+    function incarcaTabelB() {
+        const table = document.getElementById('select-tabel-b').value;
+        fetch(`${API}/tables/${table}`)
+            .then(r => r.json())
+            .then(res => {
+                const thead = document.getElementById('thead-b');
+                const tbody = document.getElementById('tbody-b');
+
+                if (!res.data || res.data.length === 0) {
+                    thead.innerHTML = '';
+                    tbody.innerHTML = `<tr><td>Tabelul este gol.</td></tr>`;
+                    return;
+                }
+
+                const cols = Object.keys(res.data[0]);
+                thead.innerHTML = '<tr>' + cols.map(c => `<th>${c}</th>`).join('') + '<th style="text-align:center;">Actiuni</th></tr>';
+
+                tbody.innerHTML = res.data.map(r => {
+                    const rowJson = encodeURIComponent(JSON.stringify(r));
+                    return `
+                        <tr>
+                            ${cols.map(c => `<td>${r[c] !== null ? r[c] : ''}</td>`).join('')}
+                            <td style="white-space:nowrap; text-align:center;">
+                                <button class="btn btn-sm" onclick="deschideModalEditare('${table}', '${rowJson}')">Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="stergeRand('${table}', '${rowJson}')">Sterge</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            })
+            .catch(err => console.error("Eroare la incarcarea tabelei B:", err));
+    }
+
+    function deschideModalEditare(table, rowJson) {
+        modalMode = 'edit';
+        currentTable = table;
+        const row = JSON.parse(decodeURIComponent(rowJson));
+        const pks = PK_MAP[table] || [Object.keys(row)[0]];
+        currentPK = {};
+        pks.forEach(k => currentPK[k] = row[k]);
+
+        document.getElementById('modal-title').innerText = `Editare inregistrare in ${table}`;
+        const fields = document.getElementById('modal-fields');
+        fields.innerHTML = Object.keys(row).map(k => {
+            const isPk = pks.includes(k);
+            return `
+                <div class="form-row">
+                    <label>${k} ${isPk ? '(Cheie Primara)' : ''}</label>
+                    <input type="text" id="inp_${k}" value="${row[k] !== null ? row[k] : ''}" ${isPk ? 'disabled style="background:#fce7ec;"' : ''}>
+                </div>
+            `;
+        }).join('');
+
+        document.getElementById('modal-crud').classList.add('show');
+    }
+
+    function deschideModalAdaugare() {
+        modalMode = 'add';
+        currentTable = document.getElementById('select-tabel-b').value;
+        document.getElementById('modal-title').innerText = `Adaugare inregistrare in ${currentTable}`;
+
+        fetch(`${API}/tables/${currentTable}`)
+            .then(r => r.json())
+            .then(res => {
+                const cols = res.data.length > 0 ? Object.keys(res.data[0]) : [];
+                const fields = document.getElementById('modal-fields');
+                fields.innerHTML = cols.map(k => `
+                    <div class="form-row">
+                        <label>${k}</label>
+                        <input type="text" id="inp_${k}">
+                    </div>
+                `).join('');
+                document.getElementById('modal-crud').classList.add('show');
+            });
+    }
+
+    function inchideModal() {
+        document.getElementById('modal-crud').classList.remove('show');
+    }
+
+    function salveazaModal() {
+        const inputs = document.querySelectorAll('#modal-fields input');
+        const data = {};
+        inputs.forEach(inp => {
+            const k = inp.id.replace('inp_', '');
+            data[k] = inp.value;
+        });
+
+        const statusBox = document.getElementById('status-crud');
+
+        if (modalMode === 'edit') {
+            fetch(`${API}/tables/${currentTable}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ primaryKey: currentPK, data })
+            })
+            .then(r => r.json())
+            .then(res => {
+                statusBox.style.display = 'block';
+                statusBox.innerText = res.message || "Date actualizate cu succes in Oracle!";
+                inchideModal();
+                incarcaTabelB();
+            })
+            .catch(err => alert("Eroare la actualizare: " + err.message));
+        } else {
+            fetch(`${API}/tables/${currentTable}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(res => {
+                statusBox.style.display = 'block';
+                statusBox.innerText = res.message || "Date adaugate cu succes in Oracle!";
+                inchideModal();
+                incarcaTabelB();
+            })
+            .catch(err => alert("Eroare la adaugare: " + err.message));
+        }
+    }
+
+    function stergeRand(table, rowJson) {
+        const row = JSON.parse(decodeURIComponent(rowJson));
+        const pks = PK_MAP[table] || [Object.keys(row)[0]];
+        const queryParams = pks.map(pk => `${pk}=${encodeURIComponent(row[pk])}`).join('&');
+
+        if (!confirm(`Confirmati stergerea inregistrarii din tabelul ${table}?`)) return;
+
+        fetch(`${API}/tables/${table}?${queryParams}`, { method: 'DELETE' })
+            .then(r => r.json())
+            .then(res => {
+                const statusBox = document.getElementById('status-crud');
+                statusBox.style.display = 'block';
+                statusBox.innerText = res.message || "Inregistrare stearsa!";
+                incarcaTabelB();
+            })
+            .catch(err => alert("Eroare la stergere: " + err.message));
+    }
+
+ 
+    function executaCerereC() {
+        const minTotal = document.getElementById('input-min-total').value || 25.00;
+        const status = document.getElementById('select-status-plata').value || 'Activ';
+
+        fetch(`${API}/queries/complex-filter?minTotal=${minTotal}&status=${status}`)
+            .then(r => r.json())
+            .then(res => {
+                const tbody = document.getElementById('tbody-c');
+                const statusBox = document.getElementById('status-c');
+
+                statusBox.style.display = 'block';
+                statusBox.innerHTML = `<strong>Rezultat:</strong> S-au extras <code>${res.count}</code> comenzi din 3 tabele (COMANDA, CLIENT, METODA_PLATA) cu Total >= ${minTotal} lei si Status = '${status}'.`;
+
+                if (res.data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">Nicio comanda nu corespunde filtrelor alese.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = res.data.map(r => `
+                    <tr>
+                        <td>${r.ID_COMANDA}</td>
+                        <td>${r.NUME_CLIENT}</td>
+                        <td>${r.EMAIL}</td>
+                        <td>${r.TELEFON || ''}</td>
+                        <td>${r.METODA_PLATA}</td>
+                        <td><strong>${r.TOTAL}</strong></td>
+                        <td>${r.DATA_PLASARII}</td>
+                    </tr>
+                `).join('');
+            })
+            .catch(err => console.error("Eroare cerere C:", err));
+    }
+
+    function filtreazaRapidC(val, stat) {
+        document.getElementById('input-min-total').value = val;
+        document.getElementById('select-status-plata').value = stat;
+        executaCerereC();
+    }
+
+    function reseteazaFiltreC() {
+        document.getElementById('input-min-total').value = 25.00;
+        document.getElementById('select-status-plata').value = 'Activ';
+        executaCerereC();
+    }
+
+
+    function executaCerereD() {
+        const minEmployees = document.getElementById('input-min-angajati').value || 2;
+        const minAvgSalary = document.getElementById('input-min-salariu').value || 3500;
+
+        fetch(`${API}/queries/group-having?minEmployees=${minEmployees}&minAvgSalary=${minAvgSalary}`)
+            .then(r => r.json())
+            .then(res => {
+                const tbody = document.getElementById('tbody-d');
+                const statusBox = document.getElementById('status-d');
+
+                statusBox.style.display = 'block';
+                statusBox.innerHTML = `<strong>Rezultat:</strong> S-au gasit <code>${res.count}</code> cafenele Brew & Bloom avand cel putin ${minEmployees} angajati si Salariu Mediu >= ${minAvgSalary} lei (clauza HAVING).`;
+
+                if (res.data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Niciun magazin nu indeplineste conditiile din HAVING.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = res.data.map(r => `
+                    <tr>
+                        <td>${r.NUME_MAGAZIN}</td>
+                        <td>${r.NUMAR_ANGAJATI}</td>
+                        <td><strong>${r.SALARIU_MEDIU}</strong></td>
+                        <td>${r.SALARIU_MINIM}</td>
+                        <td>${r.SALARIU_MAXIM}</td>
+                        <td><strong>${r.TOTAL_FOND_SALARII}</strong></td>
+                    </tr>
+                `).join('');
+            })
+            .catch(err => console.error("Eroare cerere D:", err));
+    }
+
+    function filtreazaRapidD(ang, sal) {
+        document.getElementById('input-min-angajati').value = ang;
+        document.getElementById('input-min-salariu').value = sal;
+        executaCerereD();
+    }
+
+    function reseteazaFiltreD() {
+        document.getElementById('input-min-angajati').value = 2;
+        document.getElementById('input-min-salariu').value = 3500;
+        executaCerereD();
+    }
+
+
+    function populeazaSelectCascade() {
+        fetch(`${API}/tables/CLIENT`)
+            .then(r => r.json())
+            .then(res => {
+                const select = document.getElementById('select-client-cascade');
+                select.innerHTML = res.data.map(c => `
+                    <option value="${c.CNP}">${c.NUME} ${c.PRENUME} (${c.CNP})</option>
+                `).join('');
+                incarcaClientCascade();
+            })
+            .catch(err => console.error("Eroare la populare clienti cascade:", err));
+    }
+
+    function incarcaClientCascade() {
+        const cnp = document.getElementById('select-client-cascade').value;
+        if (!cnp) return;
+
+        fetch(`${API}/cascade/client-info/${cnp}`)
+            .then(r => r.json())
+            .then(res => {
+                const container = document.getElementById('cascade-detalii');
+                if (!res.client) {
+                    container.innerHTML = '<p>Clientul nu a fost gasit.</p>';
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="info-box">
+                        <strong>Client selectat:</strong> ${res.client.NUME} ${res.client.PRENUME} | CNP: ${res.client.CNP} | Email: ${res.client.EMAIL}
+                    </div>
+                    <p style="font-size:13px; font-weight:bold; margin-bottom:6px; color:#832f48;">Comenzi asociate clientului in tabela COMANDA (${res.comenzi.length}):</p>
+                    ${res.comenzi.length === 0 ? '<p style="font-size:13px; color:#777;">Clientul nu are comenzi in baza de date.</p>' : `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID Comanda</th>
+                                    <th>Data Plasarii</th>
+                                    <th>Total (Lei)</th>
+                                    <th>Pozitii in DETALII_COMANDA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${res.comenzi.map(co => `
+                                    <tr>
+                                        <td>${co.ID_COMANDA}</td>
+                                        <td>${co.DATA_PLASARII}</td>
+                                        <td>${co.TOTAL}</td>
+                                        <td>${co.NR_PRODUSE}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `}
+                `;
+            })
+            .catch(err => console.error("Eroare info client cascade:", err));
+    }
+
+    function executaStergereCascade() {
+        const cnp = document.getElementById('select-client-cascade').value;
+        if (!confirm(`Confirmati stergerea clientului cu CNP ${cnp}? Datorita ON DELETE CASCADE, toate comenzile sale vor fi sterse automat!`)) return;
+
+        fetch(`${API}/cascade/delete-client/${cnp}`, { method: 'DELETE' })
+            .then(r => r.json())
+            .then(res => {
+                alert(res.message);
+                populeazaSelectCascade();
+            })
+            .catch(err => alert("Eroare stergere cascade: " + err.message));
+    }
+
+
+    function incarcaViewCompusa() {
+        fetch(`${API}/views/compusa`)
+            .then(r => r.json())
+            .then(res => {
+                const tbody = document.getElementById('tbody-view-compusa');
+                tbody.innerHTML = res.data.map(p => `
+                    <tr>
+                        <td>${p.ID_PRODUS}</td>
+                        <td>${p.NUME_PRODUS}</td>
+                        <td><strong>${p.PRET}</strong></td>
+                        <td>Cat. #${p.ID_CATEGORIE}</td>
+                        <td>
+                            <input type="number" step="0.5" id="p_pret_${p.ID_PRODUS}" value="${p.PRET}" style="width:70px;">
+                            <button class="btn btn-sm btn-primary" onclick="salveazaPretView(${p.ID_PRODUS})">Actualizeaza Pret</button>
+                        </td>
+                    </tr>
+                `).join('');
+            })
+            .catch(err => console.error("Eroare view compusa:", err));
+    }
+
+    function salveazaPretView(idProdus) {
+        const pretNou = document.getElementById(`p_pret_${idProdus}`).value;
+        fetch(`${API}/views/compusa/update-price`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idProdus, pretNou })
+        })
+        .then(r => r.json())
+        .then(res => {
+            alert(res.message);
+            incarcaViewCompusa();
+        })
+        .catch(err => alert("Eroare actualizare pret view: " + err.message));
+    }
+
+    function incarcaViewComplexa(sortType) {
+        fetch(`${API}/views/complexa?sortCol=${sortType || 'id'}`)
+            .then(r => r.json())
+            .then(res => {
+                const tbody = document.getElementById('tbody-view-complexa');
+                tbody.innerHTML = res.data.map(m => `
+                    <tr>
+                        <td>#${m.ID_MAGAZIN}</td>
+                        <td><strong>${m.NUME_MAGAZIN}</strong></td>
+                        <td>${m.ORAS}</td>
+                        <td>${m.NUMAR_ANGAJATI}</td>
+                        <td><strong>${m.SALARIU_MEDIU}</strong></td>
+                        <td><strong>${m.FOND_TOTAL_SALARII}</strong></td>
+                    </tr>
+                `).join('');
+            })
+            .catch(err => console.error("Eroare view complexa:", err));
+    }
+
+    // Initializare
+    window.onload = () => {
+        incarcaTabelA();
+    };
+</script>
+
+</body>
+</html>
